@@ -1,0 +1,43 @@
+{
+    "name": "gotruck/mcp-php-crud-server",
+    "description": "Servidor MCP en PHP con herramientas CRUD sobre MariaDB/MySQL, autenticacion por tokens y OAuth 2.1",
+    "type": "project",
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">=8.3",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
+        "mcp/sdk": "^0.10",
+        "league/oauth2-server": "^9.0",
+        "league/oauth2-client": "^2.7",
+        "nyholm/psr7": "^1.8",
+        "nyholm/psr7-server": "^1.1",
+        "monolog/monolog": "^3.5",
+        "vlucas/phpdotenv": "^5.6",
+        "symfony/console": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "suggest": {
+        "ext-pdo_mysql": "Necesario en tiempo de ejecucion para conectar con MySQL/MariaDB"
+    },
+    "autoload": {
+        "psr-4": { "McpPhp\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "McpPhp\\Tests\\": "tests/" }
+    },
+    "scripts": {
+        "test": "phpunit --testsuite unit",
+        "test:integration": "phpunit --testsuite integration",
+        "test:all": "phpunit"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": { "php-http/discovery": true }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

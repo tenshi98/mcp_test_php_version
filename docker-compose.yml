@@ -1,0 +1,65 @@
+# Entorno de desarrollo/pruebas: MariaDB + PHP 8.3 (con pdo_mysql).
+# Uso rapido:  docker compose up -d db  &&  docker compose run --rm app composer install
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_ROOT_PASSWORD: root_dev_password
+      MARIADB_DATABASE: mcp_server
+      MARIADB_USER: mcp_user
+      MARIADB_PASSWORD: mcp_dev_password
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build: ./docker
+    user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: mcp_server
+      DB_USER: mcp_user
+      DB_PASSWORD: mcp_dev_password
+      HOME: /tmp
+      COMPOSER_HOME: /tmp/composer
+      TEST_DB_NAME: mcp_server_test
+      TEST_DB_ADMIN_USER: root
+      TEST_DB_ADMIN_PASSWORD: root_dev_password
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Servidor HTTP de desarrollo (Streamable HTTP + OAuth) en http://localhost:8787
+  http:
+    build: ./docker
+    user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
+    working_dir: /app
+    command: php -S 0.0.0.0:8787 -t public public/index.php
+    volumes:
+      - .:/app
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: mcp_server
+      DB_USER: mcp_user
+      DB_PASSWORD: mcp_dev_password
+      PHP_CLI_SERVER_WORKERS: "4"
+    ports:
+      - "127.0.0.1:${HTTP_PORT:-8787}:8787"
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles: ["http"]
+
+volumes:
+  dbdata:

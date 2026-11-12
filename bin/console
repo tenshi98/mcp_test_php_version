@@ -1,0 +1,10 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use McpPhp\Console\ConsoleFactory;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+exit(ConsoleFactory::create(dirname(__DIR__))->run());

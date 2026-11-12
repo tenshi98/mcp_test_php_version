@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "php-crud": {
+      "command": "php",
+      "args": ["/RUTA/ABSOLUTA/mcp_test_php_version/bin/mcp-server"],
+      "env": { "APP_KEY": "...", "DB_NAME": "mcp_server", "DB_USER": "mcp_user", "DB_PASSWORD": "...", "MCP_ACCESS_TOKEN": "mcp_..." }
+    },
+    "php-crud-http": { "url": "https://mcp.tudominio.example/mcp" }
+  }
+}

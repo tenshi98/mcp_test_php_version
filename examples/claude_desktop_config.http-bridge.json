@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "php-crud-http": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.tudominio.example/mcp"]
+    }
+  }
+}

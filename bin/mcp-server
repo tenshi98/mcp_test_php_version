@@ -1,0 +1,45 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/*
+ * Servidor MCP por STDIO.
+ *
+ * El cliente MCP (Claude Desktop, OpenCode, ...) lanza este proceso y se comunica
+ * por stdin/stdout con JSON-RPC. NUNCA escriba en stdout desde aqui: corromperia el protocolo.
+ * La autenticacion usa un token personal en MCP_ACCESS_TOKEN (ver docs/AUTHENTICATION.md).
+ */
+
+use Mcp\Server\Transport\StdioTransport;
+use McpPhp\Core\Application;
+use McpPhp\Exceptions\McpPhpException;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$fail = static function (string $message): never {
+    fwrite(STDERR, "[mcp-server] $message\n");
+    exit(1);
+};
+
+try {
+    $app = Application::boot(dirname(__DIR__));
+    $app->assertConfigured();
+
+    $token = $app->config->get('MCP_ACCESS_TOKEN');
+    if ($token === null) {
+        $fail('Falta MCP_ACCESS_TOKEN. Cree uno con: php bin/console token:create --email=usuario@ejemplo.com');
+    }
+
+    // Autenticacion al inicio: un token invalido impide levantar el servidor.
+    $principal = $app->stdioPrincipalResolver($token)->resolve(null);
+    fwrite(STDERR, sprintf("[mcp-server] Autenticado como %s (rol %s)\n", $principal->email, $principal->role->value));
+
+    $server = $app->serverFactory($app->stdioPrincipalResolver($token))->build();
+    exit($server->run(new StdioTransport()));
+} catch (McpPhpException $e) {
+    $fail($e->getMessage());
+} catch (Throwable $e) {
+    error_log('[mcp-server] ' . $e::class . ': ' . $e->getMessage());
+    $fail('Error al iniciar el servidor. Revise storage/logs/app.log');
+}

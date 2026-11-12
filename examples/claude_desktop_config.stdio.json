@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "php-crud": {
+      "command": "php",
+      "args": ["/RUTA/ABSOLUTA/mcp_test_php_version/bin/mcp-server"],
+      "env": {
+        "APP_KEY": "REEMPLAZAR_CON_APP_KEY_DEL_.ENV",
+        "DB_HOST": "127.0.0.1",
+        "DB_PORT": "3306",
+        "DB_NAME": "mcp_server",
+        "DB_USER": "mcp_user",
+        "DB_PASSWORD": "REEMPLAZAR",
+        "MCP_ACCESS_TOKEN": "mcp_REEMPLAZAR_CON_TOKEN_DE_token:create"
+      }
+    }
+  }
+}
